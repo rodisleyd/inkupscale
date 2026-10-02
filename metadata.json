@@ -1,0 +1,6 @@
+{
+  "name": "Ink Upscaler Pro - Line Art & Super Resolution Studio",
+  "description": "Aplicativo profissional de super-resolução e reconstrução de arte final e nanquim para ilustradores e designers. Converte raster em qualidade de impressão 300 DPI, elimina serrilhados e preserva hachuras.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
