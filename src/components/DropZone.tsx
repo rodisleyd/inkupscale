@@ -39,7 +39,7 @@ export const DropZone: React.FC<DropZoneProps> = ({ onFileSelect, onSampleSelect
     }
   };
 
-  const handleUrlSubmit = (e: React.FormEvent) => {
+  const handleUrlSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setUrlError(null);
 
@@ -67,7 +67,57 @@ export const DropZone: React.FC<DropZoneProps> = ({ onFileSelect, onSampleSelect
       }
     } catch {}
 
-    // Verify image can be loaded
+    // If it's already a base64 data URL
+    if (trimmed.startsWith('data:image/')) {
+      setIsLoadingUrl(false);
+      onUrlSelect(trimmed, name);
+      return;
+    }
+
+    const blobToDataUrl = (blob: Blob): Promise<string> => {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onloadend = () => resolve(reader.result as string);
+        reader.onerror = reject;
+        reader.readAsDataURL(blob);
+      });
+    };
+
+    // Strategy 1: Local / Vercel Serverless Image Proxy (Bypasses Pinterest, ArtStation, etc. CORS)
+    try {
+      const res = await fetch(`/api/proxy-image?url=${encodeURIComponent(trimmed)}`);
+      if (res.ok) {
+        const blob = await res.blob();
+        if (blob && blob.size > 0 && blob.type.startsWith('image/')) {
+          const dataUrl = await blobToDataUrl(blob);
+          setIsLoadingUrl(false);
+          onUrlSelect(dataUrl, name);
+          return;
+        }
+      }
+    } catch (e) {
+      console.warn('Local proxy failed, trying fallback...', e);
+    }
+
+    // Strategy 2: High reliability CORS proxy fallback (images.weserv.nl)
+    try {
+      const cleanUrl = trimmed.replace(/^https?:\/\//, '');
+      const fallbackUrl = `https://images.weserv.nl/?url=${encodeURIComponent(cleanUrl)}&output=png`;
+      const res = await fetch(fallbackUrl);
+      if (res.ok) {
+        const blob = await res.blob();
+        if (blob && blob.size > 0 && blob.type.startsWith('image/')) {
+          const dataUrl = await blobToDataUrl(blob);
+          setIsLoadingUrl(false);
+          onUrlSelect(dataUrl, name);
+          return;
+        }
+      }
+    } catch (e) {
+      console.warn('Fallback proxy failed, trying direct image load...', e);
+    }
+
+    // Strategy 3: Direct browser image load
     const testImg = new Image();
     testImg.crossOrigin = 'anonymous';
     testImg.src = trimmed;
@@ -79,7 +129,7 @@ export const DropZone: React.FC<DropZoneProps> = ({ onFileSelect, onSampleSelect
 
     testImg.onerror = () => {
       setIsLoadingUrl(false);
-      setUrlError('Não foi possível carregar a imagem. Verifique se o link está correto e acessível publicamente.');
+      setUrlError('Não foi possível carregar a imagem desta URL. Verifique se o link direto da imagem está correto.');
     };
   };
 
