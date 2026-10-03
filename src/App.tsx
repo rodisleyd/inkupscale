@@ -352,6 +352,8 @@ export default function App() {
                   onPrintSettingsChange={(newPrint) => setPrintSettings(newPrint)}
                   onProcess={() => runProcessing(sourceImg, mode, inkSettings, printSettings)}
                   isProcessing={isProcessing}
+                  progressPercent={progressPercent}
+                  progressStatus={progressStatus}
                   hasResult={!!resultUrl}
                   onDownloadPng={handleDownloadPng}
                   onDownloadSvg={handleDownloadSvg}

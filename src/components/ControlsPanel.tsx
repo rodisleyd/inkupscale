@@ -26,6 +26,8 @@ interface ControlsPanelProps {
   onPrintSettingsChange: (settings: PrintSettings) => void;
   onProcess: () => void;
   isProcessing: boolean;
+  progressPercent?: number;
+  progressStatus?: string;
   hasResult: boolean;
   onDownloadPng: () => void;
   onDownloadSvg: () => void;
@@ -43,6 +45,8 @@ export const ControlsPanel: React.FC<ControlsPanelProps> = ({
   onPrintSettingsChange,
   onProcess,
   isProcessing,
+  progressPercent = 0,
+  progressStatus = '',
   hasResult,
   onDownloadPng,
   onDownloadSvg,
@@ -425,15 +429,60 @@ export const ControlsPanel: React.FC<ControlsPanelProps> = ({
         </div>
       )}
 
-      {/* Main Process Button */}
-      <button
-        onClick={onProcess}
-        disabled={isProcessing}
-        className="w-full py-3.5 px-4 rounded-xl bg-gradient-to-r from-cyan-500 via-blue-600 to-indigo-600 hover:from-cyan-400 hover:via-blue-500 hover:to-indigo-500 text-white font-bold text-sm tracking-wide shadow-lg shadow-cyan-500/20 active:scale-[0.99] disabled:opacity-50 disabled:cursor-not-allowed transition flex items-center justify-center gap-2 group cursor-pointer"
-      >
-        <Sparkles className="w-4 h-4 group-hover:rotate-12 transition-transform" />
-        <span>{isProcessing ? 'Processando Arte...' : '[ Processar Imagem ]'}</span>
-      </button>
+      {/* Main Process Button with Integrated Progress Bar */}
+      <div className="space-y-3">
+        <button
+          onClick={onProcess}
+          disabled={isProcessing}
+          className={`relative w-full py-3.5 px-4 rounded-xl font-bold text-sm tracking-wide shadow-lg overflow-hidden transition-all flex items-center justify-center gap-2 group ${
+            isProcessing
+              ? 'bg-zinc-900 border border-cyan-500/50 text-cyan-300 shadow-cyan-500/20 cursor-wait'
+              : 'bg-gradient-to-r from-cyan-500 via-blue-600 to-indigo-600 hover:from-cyan-400 hover:via-blue-500 hover:to-indigo-500 text-white shadow-cyan-500/20 active:scale-[0.99] cursor-pointer'
+          }`}
+        >
+          {/* Inner animated filling progress bar */}
+          {isProcessing && (
+            <div
+              className="absolute inset-y-0 left-0 bg-gradient-to-r from-cyan-500/30 via-blue-600/40 to-cyan-400/50 transition-all duration-200 border-r border-cyan-400"
+              style={{ width: `${progressPercent}%` }}
+            />
+          )}
+
+          <div className="relative z-10 flex items-center gap-2">
+            {isProcessing ? (
+              <>
+                <div className="w-4 h-4 border-2 border-cyan-400 border-t-transparent rounded-full animate-spin" />
+                <span>Processando Arte ({progressPercent}%)</span>
+              </>
+            ) : (
+              <>
+                <Sparkles className="w-4 h-4 group-hover:rotate-12 transition-transform" />
+                <span>[ Processar Imagem ]</span>
+              </>
+            )}
+          </div>
+        </button>
+
+        {/* Live Progress HUD Box (Visible during processing) */}
+        {isProcessing && (
+          <div className="p-3 rounded-xl bg-zinc-900/90 border border-cyan-500/40 shadow-xl backdrop-blur space-y-2">
+            <div className="flex items-center justify-between text-xs font-mono">
+              <span className="text-zinc-300 text-[11px] truncate max-w-[240px]">
+                {progressStatus || 'Processando matriz de pixels...'}
+              </span>
+              <span className="text-cyan-400 font-bold">{progressPercent}%</span>
+            </div>
+
+            {/* Glowing Progress Track */}
+            <div className="w-full h-2 bg-zinc-950 rounded-full overflow-hidden border border-zinc-800 p-0.5">
+              <div
+                className="h-full bg-gradient-to-r from-cyan-500 via-blue-500 to-indigo-500 rounded-full transition-all duration-200 shadow-[0_0_12px_rgba(6,182,212,0.6)]"
+                style={{ width: `${progressPercent}%` }}
+              />
+            </div>
+          </div>
+        )}
+      </div>
 
       {/* Export / Download Section */}
       {hasResult && (
