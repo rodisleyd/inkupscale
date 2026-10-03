@@ -1,4 +1,4 @@
-﻿import { GoogleGenAI } from '@google/genai';
+import { GoogleGenAI } from '@google/genai';
 
 export default async function handler(req: any, res: any) {
   if (req.method !== 'POST') {
@@ -35,7 +35,7 @@ export default async function handler(req: any, res: any) {
     const ai = new GoogleGenAI({ apiKey });
     const cleanBase64 = imageBase64.replace(/^data:image\/\w+;base64,/, '');
 
-    const prompt = Você é um mestre impressor e diretor de arte especialista em quadrinhos, mangá, nanquim e artes gráficas.
+    const prompt = `Você é um mestre impressor e diretor de arte especialista em quadrinhos, mangá, nanquim e artes gráficas.
 Analise detalhadamente esta ilustração enviada pelo ilustrador e forneça uma avaliação técnica em formato JSON válido para nosso motor de upscaling e restauração de impressão:
 {
   "recommendedMode": "INK_VECTOR" ou "SUPER_RES",
@@ -53,7 +53,7 @@ Analise detalhadamente esta ilustração enviada pelo ilustrador e forneça uma 
   },
   "technicalNotes": "Parágrafo com recomendações técnicas para impressão gráfica offset/fine-art em 300 DPI sem perder os detalhes finos."
 }
-Responda APENAS com o JSON.;
+Responda APENAS com o JSON.`;
 
     const response = await ai.models.generateContent({
       model: 'gemini-2.5-flash',

@@ -108,6 +108,10 @@ export default function App() {
       // 2. Perform initial instant upscaling pass
       runProcessing(img, analysis.detectedMode, inkSettings, printSettings);
     };
+
+    img.onerror = () => {
+      setNotification('❌ Erro ao carregar a imagem da URL fornecida.');
+    };
   }, [inkSettings, printSettings]);
 
   // User file upload handler
@@ -285,6 +289,7 @@ export default function App() {
           <DropZone
             onFileSelect={handleFileSelect}
             onSampleSelect={handleSampleSelect}
+            onUrlSelect={(url, name) => handleLoadImage(url, name || 'arte_web.png')}
           />
         ) : (
           /* Active State: Studio Layout (Comparison Canvas + Inspector Controls) */
