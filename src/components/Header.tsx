@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   Sparkles, 
   Printer, 
@@ -6,7 +6,8 @@ import {
   Cpu, 
   FolderSync, 
   Info,
-  Maximize2
+  Maximize2,
+  Download
 } from 'lucide-react';
 import { AppMode } from '../types';
 
@@ -30,6 +31,41 @@ export const Header: React.FC<HeaderProps> = ({
   hasImage,
   detectedModeInfo
 }) => {
+  const [installPrompt, setInstallPrompt] = useState<any>(null);
+  const [isInstalled, setIsInstalled] = useState(false);
+
+  useEffect(() => {
+    const handleBeforeInstall = (e: Event) => {
+      e.preventDefault();
+      setInstallPrompt(e);
+    };
+
+    const handleAppInstalled = () => {
+      setIsInstalled(true);
+      setInstallPrompt(null);
+    };
+
+    window.addEventListener('beforeinstallprompt', handleBeforeInstall);
+    window.addEventListener('appinstalled', handleAppInstalled);
+
+    if (window.matchMedia('(display-mode: standalone)').matches) {
+      setIsInstalled(true);
+    }
+
+    return () => {
+      window.removeEventListener('beforeinstallprompt', handleBeforeInstall);
+      window.removeEventListener('appinstalled', handleAppInstalled);
+    };
+  }, []);
+
+  const handleInstallClick = async () => {
+    if (!installPrompt) return;
+    installPrompt.prompt();
+    const { outcome } = await installPrompt.userChoice;
+    if (outcome === 'accepted') {
+      setInstallPrompt(null);
+    }
+  };
   return (
     <header className="border-b border-zinc-800 bg-zinc-950/80 backdrop-blur sticky top-0 z-40 px-4 py-3">
       <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-3">
@@ -117,6 +153,17 @@ export const Header: React.FC<HeaderProps> = ({
                 <span className="hidden lg:inline">Chapas CMYK</span>
               </button>
             </>
+          )}
+
+          {installPrompt && (
+            <button
+              onClick={handleInstallClick}
+              className="flex items-center gap-1.5 text-xs px-2.5 py-1.5 rounded-lg bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white font-bold shadow-lg shadow-cyan-500/20 transition-all animate-pulse cursor-pointer"
+              title="Instalar Ink Upscaler Pro no seu dispositivo"
+            >
+              <Download className="w-3.5 h-3.5" />
+              <span>Instalar App</span>
+            </button>
           )}
 
           <button

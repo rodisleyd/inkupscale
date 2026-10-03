@@ -1,0 +1,52 @@
+﻿{
+  "name": "Ink Upscaler Pro - Line Art & 300 DPI Studio",
+  "short_name": "Ink Upscale",
+  "description": "Aplicativo profissional de super-resolução e reconstrução de arte final e nanquim para ilustradores e designers.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#09090b",
+  "theme_color": "#09090b",
+  "categories": ["graphics", "photo", "productivity", "utilities"],
+  "icons": [
+    {
+      "src": "/pwa-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/pwa-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    },
+    {
+      "src": "/pwa-maskable-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Arte Final Nanquim",
+      "url": "/?mode=INK_VECTOR",
+      "description": "Reconstrução de linhas de nanquim e hachuras"
+    },
+    {
+      "name": "Super Resolution",
+      "url": "/?mode=SUPER_RES",
+      "description": "Upscaling para cor e fotos"
+    },
+    {
+      "name": "Print Master 300 DPI",
+      "url": "/?mode=PRINT_MASTER",
+      "description": "Dimensionamento gráfico para impressão"
+    }
+  ]
+}
