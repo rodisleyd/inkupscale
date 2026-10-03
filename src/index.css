@@ -1,26 +1,49 @@
 @import "tailwindcss";
 
-body {
-  font-family: 'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  background-color: #09090b;
-  color: #f4f4f5;
+:root {
+  color-scheme: dark;
 }
 
-/* Custom dark scrollbar for illustrator studio workspace */
+:root.light {
+  color-scheme: light;
+}
+
+body {
+  font-family: 'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+/* Custom scrollbar */
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
 }
 
-::-webkit-scrollbar-track {
+:root.dark ::-webkit-scrollbar-track,
+body:not(.light) ::-webkit-scrollbar-track {
   background: #09090b;
 }
 
-::-webkit-scrollbar-thumb {
+:root.dark ::-webkit-scrollbar-thumb,
+body:not(.light) ::-webkit-scrollbar-thumb {
   background: #27272a;
   border-radius: 9999px;
 }
 
-::-webkit-scrollbar-thumb:hover {
+:root.dark ::-webkit-scrollbar-thumb:hover,
+body:not(.light) ::-webkit-scrollbar-thumb:hover {
   background: #3f3f46;
+}
+
+:root.light ::-webkit-scrollbar-track {
+  background: #f4f4f5;
+}
+
+:root.light ::-webkit-scrollbar-thumb {
+  background: #d4d4d8;
+  border-radius: 9999px;
+}
+
+:root.light ::-webkit-scrollbar-thumb:hover {
+  background: #a1a1aa;
 }

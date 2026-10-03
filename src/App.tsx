@@ -4,6 +4,7 @@
  */
 
 import React, { useState, useEffect, useRef, useCallback } from 'react';
+import { Sparkles, ArrowLeft } from 'lucide-react';
 import { Header } from './components/Header';
 import { DropZone } from './components/DropZone';
 import { ComparisonViewer } from './components/ComparisonViewer';
@@ -18,9 +19,12 @@ import { processArtwork } from './utils/inkEngine';
 import { setPngDpi } from './utils/pngDpiInjector';
 import { rasterToSvg } from './utils/vectorizer';
 import { calculatePixels } from './utils/presets';
-import { ArrowLeft, Sparkles, CheckCircle2 } from 'lucide-react';
+import { useTheme } from './context/ThemeContext';
 
 export default function App() {
+  const { theme } = useTheme();
+  const isDark = theme === 'dark';
+
   // Current Mode
   const [mode, setMode] = useState<AppMode>('INK_VECTOR');
 
@@ -254,7 +258,9 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen bg-zinc-950 text-zinc-100 flex flex-col font-sans selection:bg-cyan-500/30 selection:text-cyan-200">
+    <div className={`min-h-screen flex flex-col font-sans transition-colors duration-200 selection:bg-cyan-500/30 selection:text-cyan-800 dark:selection:text-cyan-200 ${
+      isDark ? 'bg-zinc-950 text-zinc-100' : 'bg-slate-50 text-zinc-800'
+    }`}>
       {/* Top Header */}
       <Header
         currentMode={mode}
@@ -275,8 +281,12 @@ export default function App() {
       {/* Floating Detection Notification Banner */}
       {notification && (
         <div className="fixed top-16 right-4 z-50 animate-bounce">
-          <div className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-zinc-900/95 border border-cyan-500/50 text-xs font-semibold text-cyan-300 shadow-2xl backdrop-blur">
-            <Sparkles className="w-4 h-4 text-cyan-400" />
+          <div className={`flex items-center gap-2 px-4 py-2.5 rounded-xl border text-xs font-semibold shadow-2xl backdrop-blur transition-colors ${
+            isDark 
+              ? 'bg-zinc-900/95 border-cyan-500/50 text-cyan-300' 
+              : 'bg-white/95 border-cyan-400 text-cyan-700 shadow-cyan-500/10'
+          }`}>
+            <Sparkles className="w-4 h-4 text-cyan-500" />
             <span>{notification}</span>
           </div>
         </div>
@@ -304,16 +314,24 @@ export default function App() {
                   setAnalysisResult(null);
                   setAiAnalysis(null);
                 }}
-                className="flex items-center gap-1.5 text-xs text-zinc-400 hover:text-white px-3 py-1.5 rounded-lg bg-zinc-900 border border-zinc-800 transition cursor-pointer"
+                className={`flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-lg border transition cursor-pointer ${
+                  isDark 
+                    ? 'text-zinc-400 hover:text-white bg-zinc-900 border-zinc-800 hover:border-zinc-700' 
+                    : 'text-zinc-600 hover:text-zinc-900 bg-white border-zinc-200 hover:border-zinc-300 shadow-sm'
+                }`}
               >
                 <ArrowLeft className="w-3.5 h-3.5" />
                 <span>Escolher Outra Arte</span>
               </button>
 
-              <div className="flex items-center gap-2 text-xs text-zinc-400">
-                <span className="font-mono text-zinc-300 font-semibold">{fileName}</span>
+              <div className="flex items-center gap-2 text-xs">
+                <span className={`font-mono font-semibold ${isDark ? 'text-zinc-300' : 'text-zinc-700'}`}>{fileName}</span>
                 {analysisResult && (
-                  <span className="px-2 py-0.5 rounded-full bg-cyan-950/70 border border-cyan-800/60 text-cyan-400 text-[11px] font-medium">
+                  <span className={`px-2 py-0.5 rounded-full text-[11px] font-medium border ${
+                    isDark 
+                      ? 'bg-cyan-950/70 border-cyan-800/60 text-cyan-400' 
+                      : 'bg-cyan-50 border-cyan-200 text-cyan-700'
+                  }`}>
                     {analysisResult.description}
                   </span>
                 )}

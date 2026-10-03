@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { X, Layers, Printer, CheckCircle2, ShieldAlert } from 'lucide-react';
+import { useTheme } from '../context/ThemeContext';
 
 interface CmykModalProps {
   isOpen: boolean;
@@ -8,6 +9,8 @@ interface CmykModalProps {
 }
 
 export const CmykModal: React.FC<CmykModalProps> = ({ isOpen, onClose, imageUrl }) => {
+  const { theme } = useTheme();
+  const isDark = theme === 'dark';
   const [activePlate, setActivePlate] = useState<'all' | 'c' | 'm' | 'y' | 'k'>('all');
   const [plates, setPlates] = useState<{
     c: string;
@@ -107,21 +110,27 @@ export const CmykModal: React.FC<CmykModalProps> = ({ isOpen, onClose, imageUrl 
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
-      <div className="bg-zinc-950 border border-zinc-800 rounded-2xl max-w-3xl w-full p-6 space-y-6 shadow-2xl">
-        <div className="flex items-center justify-between border-b border-zinc-800 pb-4">
+    <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
+      <div className={`border rounded-2xl max-w-3xl w-full p-6 space-y-6 shadow-2xl transition-colors ${
+        isDark ? 'bg-zinc-950 border-zinc-800' : 'bg-white border-zinc-200'
+      }`}>
+        <div className={`flex items-center justify-between border-b pb-4 ${isDark ? 'border-zinc-800' : 'border-zinc-200'}`}>
           <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-lg bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-400">
+            <div className={`w-8 h-8 rounded-lg flex items-center justify-center border ${
+              isDark ? 'bg-amber-500/10 border-amber-500/30 text-amber-400' : 'bg-amber-50 border-amber-200 text-amber-700'
+            }`}>
               <Layers className="w-4 h-4" />
             </div>
             <div>
-              <h3 className="text-base font-bold text-white">Inspeção de Chapas CMYK (Offset)</h3>
-              <p className="text-xs text-zinc-400">Simulação de fotolitos e separação de tintas gráficas</p>
+              <h3 className={`text-base font-bold ${isDark ? 'text-white' : 'text-zinc-900'}`}>Inspeção de Chapas CMYK (Offset)</h3>
+              <p className={`text-xs ${isDark ? 'text-zinc-400' : 'text-zinc-500'}`}>Simulação de fotolitos e separação de tintas gráficas</p>
             </div>
           </div>
           <button
             onClick={onClose}
-            className="p-1 rounded-lg text-zinc-500 hover:text-white hover:bg-zinc-800 transition"
+            className={`p-1 rounded-lg transition cursor-pointer ${
+              isDark ? 'text-zinc-500 hover:text-white hover:bg-zinc-800' : 'text-zinc-400 hover:text-zinc-900 hover:bg-zinc-100'
+            }`}
           >
             <X className="w-5 h-5" />
           </button>
@@ -129,54 +138,66 @@ export const CmykModal: React.FC<CmykModalProps> = ({ isOpen, onClose, imageUrl 
 
         {/* Plates Grid */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-          <div className="p-3 rounded-xl bg-zinc-900 border border-cyan-500/30 space-y-2">
-            <div className="flex justify-between items-center text-xs font-bold text-cyan-400">
+          <div className={`p-3 rounded-xl border space-y-2 ${
+            isDark ? 'bg-zinc-900 border-cyan-500/30' : 'bg-zinc-50 border-cyan-300 shadow-sm'
+          }`}>
+            <div className={`flex justify-between items-center text-xs font-bold ${isDark ? 'text-cyan-400' : 'text-cyan-700'}`}>
               <span>CYAN (C)</span>
-              <span className="text-[10px] text-zinc-500">Chapa 1</span>
+              <span className={`text-[10px] ${isDark ? 'text-zinc-500' : 'text-zinc-400'}`}>Chapa 1</span>
             </div>
-            <div className="aspect-square bg-white rounded-lg overflow-hidden border border-zinc-800 flex items-center justify-center">
-              {plates ? <img src={plates.c} alt="Cyan plate" className="w-full h-full object-contain" /> : <div className="animate-pulse bg-zinc-800 w-full h-full" />}
+            <div className="aspect-square bg-white rounded-lg overflow-hidden border border-zinc-200 flex items-center justify-center">
+              {plates ? <img src={plates.c} alt="Cyan plate" className="w-full h-full object-contain" /> : <div className="animate-pulse bg-zinc-200 w-full h-full" />}
             </div>
           </div>
 
-          <div className="p-3 rounded-xl bg-zinc-900 border border-pink-500/30 space-y-2">
-            <div className="flex justify-between items-center text-xs font-bold text-pink-400">
+          <div className={`p-3 rounded-xl border space-y-2 ${
+            isDark ? 'bg-zinc-900 border-pink-500/30' : 'bg-zinc-50 border-pink-300 shadow-sm'
+          }`}>
+            <div className={`flex justify-between items-center text-xs font-bold ${isDark ? 'text-pink-400' : 'text-pink-700'}`}>
               <span>MAGENTA (M)</span>
-              <span className="text-[10px] text-zinc-500">Chapa 2</span>
+              <span className={`text-[10px] ${isDark ? 'text-zinc-500' : 'text-zinc-400'}`}>Chapa 2</span>
             </div>
-            <div className="aspect-square bg-white rounded-lg overflow-hidden border border-zinc-800 flex items-center justify-center">
-              {plates ? <img src={plates.m} alt="Magenta plate" className="w-full h-full object-contain" /> : <div className="animate-pulse bg-zinc-800 w-full h-full" />}
+            <div className="aspect-square bg-white rounded-lg overflow-hidden border border-zinc-200 flex items-center justify-center">
+              {plates ? <img src={plates.m} alt="Magenta plate" className="w-full h-full object-contain" /> : <div className="animate-pulse bg-zinc-200 w-full h-full" />}
             </div>
           </div>
 
-          <div className="p-3 rounded-xl bg-zinc-900 border border-yellow-500/30 space-y-2">
-            <div className="flex justify-between items-center text-xs font-bold text-yellow-400">
+          <div className={`p-3 rounded-xl border space-y-2 ${
+            isDark ? 'bg-zinc-900 border-yellow-500/30' : 'bg-zinc-50 border-yellow-400/50 shadow-sm'
+          }`}>
+            <div className={`flex justify-between items-center text-xs font-bold ${isDark ? 'text-yellow-400' : 'text-yellow-700'}`}>
               <span>YELLOW (Y)</span>
-              <span className="text-[10px] text-zinc-500">Chapa 3</span>
+              <span className={`text-[10px] ${isDark ? 'text-zinc-500' : 'text-zinc-400'}`}>Chapa 3</span>
             </div>
-            <div className="aspect-square bg-white rounded-lg overflow-hidden border border-zinc-800 flex items-center justify-center">
-              {plates ? <img src={plates.y} alt="Yellow plate" className="w-full h-full object-contain" /> : <div className="animate-pulse bg-zinc-800 w-full h-full" />}
+            <div className="aspect-square bg-white rounded-lg overflow-hidden border border-zinc-200 flex items-center justify-center">
+              {plates ? <img src={plates.y} alt="Yellow plate" className="w-full h-full object-contain" /> : <div className="animate-pulse bg-zinc-200 w-full h-full" />}
             </div>
           </div>
 
-          <div className="p-3 rounded-xl bg-zinc-900 border border-white/40 space-y-2 shadow-lg shadow-black/40">
-            <div className="flex justify-between items-center text-xs font-bold text-white">
+          <div className={`p-3 rounded-xl border space-y-2 shadow-lg ${
+            isDark ? 'bg-zinc-900 border-white/40 shadow-black/40' : 'bg-zinc-50 border-zinc-400 shadow-zinc-200/50'
+          }`}>
+            <div className={`flex justify-between items-center text-xs font-bold ${isDark ? 'text-white' : 'text-zinc-900'}`}>
               <span>KEY / BLACK (K)</span>
-              <span className="text-[10px] px-1 bg-cyan-500/20 text-cyan-400 rounded">Nanquim</span>
+              <span className={`text-[10px] px-1 rounded ${
+                isDark ? 'bg-cyan-500/20 text-cyan-400' : 'bg-cyan-100 text-cyan-800'
+              }`}>Nanquim</span>
             </div>
-            <div className="aspect-square bg-white rounded-lg overflow-hidden border border-zinc-800 flex items-center justify-center">
-              {plates ? <img src={plates.k} alt="Key plate" className="w-full h-full object-contain" /> : <div className="animate-pulse bg-zinc-800 w-full h-full" />}
+            <div className="aspect-square bg-white rounded-lg overflow-hidden border border-zinc-200 flex items-center justify-center">
+              {plates ? <img src={plates.k} alt="Key plate" className="w-full h-full object-contain" /> : <div className="animate-pulse bg-zinc-200 w-full h-full" />}
             </div>
           </div>
         </div>
 
         {/* Technical Print Summary */}
-        <div className="p-4 rounded-xl bg-zinc-900/80 border border-zinc-800 text-xs space-y-2 text-zinc-300">
-          <div className="flex items-center gap-2 font-semibold text-emerald-400">
+        <div className={`p-4 rounded-xl border text-xs space-y-2 ${
+          isDark ? 'bg-zinc-900/80 border-zinc-800 text-zinc-300' : 'bg-zinc-50 border-zinc-200 text-zinc-700'
+        }`}>
+          <div className={`flex items-center gap-2 font-semibold ${isDark ? 'text-emerald-400' : 'text-emerald-700'}`}>
             <CheckCircle2 className="w-4 h-4" />
             <span>Chapa K (Preto Nanquim) Concentra 94% dos Dados de Traço</span>
           </div>
-          <p className="text-zinc-400 leading-relaxed text-[11px]">
+          <p className={`leading-relaxed text-[11px] ${isDark ? 'text-zinc-400' : 'text-zinc-600'}`}>
             Em ilustrações de arte final preto e branco, a chapa <strong>K (Black)</strong> atua isoladamente com registro perfeito sem risco de "fantasma" de cores nas máquinas offset, garantindo fidelidade de impressão com preto 100% puro.
           </p>
         </div>

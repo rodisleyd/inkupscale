@@ -6,12 +6,13 @@ import {
   Columns, 
   SplitSquareVertical, 
   Eye, 
-  Move,
-  RotateCcw,
-  Sparkles,
-  Layers,
-  Check
+  Move, 
+  RotateCcw, 
+  Sparkles, 
+  Layers, 
+  Check 
 } from 'lucide-react';
+import { useTheme } from '../context/ThemeContext';
 
 interface ComparisonViewerProps {
   originalUrl: string;
@@ -38,6 +39,8 @@ export const ComparisonViewer: React.FC<ComparisonViewerProps> = ({
   progressPercent,
   progressStatus,
 }) => {
+  const { theme } = useTheme();
+  const isDark = theme === 'dark';
   const containerRef = useRef<HTMLDivElement>(null);
   const [splitPos, setSplitPos] = useState<number>(50); // percentage 0 - 100
   const [isDraggingSplit, setIsDraggingSplit] = useState(false);
@@ -97,28 +100,42 @@ export const ComparisonViewer: React.FC<ComparisonViewerProps> = ({
   const bgClasses = {
     dark: 'bg-zinc-950',
     white: 'bg-white',
-    checker: 'bg-[radial-gradient(#27272a_1px,transparent_1px)] [background-size:16px_16px] bg-zinc-900',
+    checker: isDark 
+      ? 'bg-[radial-gradient(#27272a_1px,transparent_1px)] [background-size:16px_16px] bg-zinc-900' 
+      : 'bg-[radial-gradient(#cbd5e1_1px,transparent_1px)] [background-size:16px_16px] bg-slate-100',
   };
 
   const displayResultUrl = resultUrl || originalUrl;
 
   return (
-    <div className="flex flex-col h-full bg-zinc-950 border border-zinc-800 rounded-2xl overflow-hidden shadow-2xl">
+    <div className={`flex flex-col h-full border rounded-2xl overflow-hidden shadow-2xl transition-colors ${
+      isDark ? 'bg-zinc-950 border-zinc-800' : 'bg-white border-zinc-200 shadow-zinc-200/50'
+    }`}>
       {/* Top Toolbar */}
-      <div className="flex flex-wrap items-center justify-between gap-2 px-4 py-2.5 bg-zinc-900/90 border-b border-zinc-800 text-xs">
+      <div className={`flex flex-wrap items-center justify-between gap-2 px-4 py-2.5 border-b text-xs transition-colors ${
+        isDark ? 'bg-zinc-900/90 border-zinc-800' : 'bg-zinc-100/90 border-zinc-200'
+      }`}>
         {/* Dimensions & DPI HUD */}
         <div className="flex items-center gap-3">
-          <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-zinc-800/80 border border-zinc-700/60 font-mono text-zinc-300">
-            <span className="text-zinc-500 font-sans font-medium text-[10px] uppercase">Original:</span>
+          <div className={`flex items-center gap-1.5 px-2.5 py-1 rounded-md font-mono border ${
+            isDark ? 'bg-zinc-800/80 border-zinc-700/60 text-zinc-300' : 'bg-white border-zinc-200 text-zinc-700 shadow-sm'
+          }`}>
+            <span className={`font-sans font-medium text-[10px] uppercase ${isDark ? 'text-zinc-500' : 'text-zinc-400'}`}>Original:</span>
             <span>{originalWidth}×{originalHeight} px</span>
           </div>
 
-          <span className="text-zinc-600">→</span>
+          <span className={isDark ? 'text-zinc-600' : 'text-zinc-400'}>→</span>
 
-          <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-cyan-950/60 border border-cyan-800/60 font-mono text-cyan-300">
-            <span className="text-cyan-500 font-sans font-medium text-[10px] uppercase">Resultado:</span>
+          <div className={`flex items-center gap-1.5 px-2.5 py-1 rounded-md font-mono border ${
+            isDark 
+              ? 'bg-cyan-950/60 border-cyan-800/60 text-cyan-300' 
+              : 'bg-cyan-50 border-cyan-200 text-cyan-800 shadow-sm'
+          }`}>
+            <span className={`font-sans font-medium text-[10px] uppercase ${isDark ? 'text-cyan-500' : 'text-cyan-600'}`}>Resultado:</span>
             <span>{resultWidth || originalWidth * 2}×{resultHeight || originalHeight * 2} px</span>
-            <span className="text-[10px] px-1 rounded bg-cyan-500/20 text-cyan-400 font-sans font-bold">
+            <span className={`text-[10px] px-1 rounded font-sans font-bold ${
+              isDark ? 'bg-cyan-500/20 text-cyan-400' : 'bg-cyan-200/60 text-cyan-800'
+            }`}>
               {dpi} DPI
             </span>
           </div>
@@ -127,27 +144,37 @@ export const ComparisonViewer: React.FC<ComparisonViewerProps> = ({
         {/* Zoom & View Controls */}
         <div className="flex items-center gap-2">
           {/* Zoom Buttons */}
-          <div className="flex items-center bg-zinc-800/80 rounded-lg p-0.5 border border-zinc-700/60">
+          <div className={`flex items-center rounded-lg p-0.5 border ${
+            isDark ? 'bg-zinc-800/80 border-zinc-700/60' : 'bg-white border-zinc-200 shadow-sm'
+          }`}>
             <button
               onClick={() => setZoom(Math.max(0.5, zoom - 0.5))}
-              className="p-1.5 text-zinc-400 hover:text-white rounded hover:bg-zinc-700 transition"
+              className={`p-1.5 rounded transition cursor-pointer ${
+                isDark ? 'text-zinc-400 hover:text-white hover:bg-zinc-700' : 'text-zinc-600 hover:text-zinc-900 hover:bg-zinc-100'
+              }`}
               title="Reduzir Zoom"
             >
               <ZoomOut className="w-3.5 h-3.5" />
             </button>
-            <span className="px-2 font-mono text-[11px] text-zinc-300 min-w-[42px] text-center">
+            <span className={`px-2 font-mono text-[11px] min-w-[42px] text-center ${
+              isDark ? 'text-zinc-300' : 'text-zinc-800 font-semibold'
+            }`}>
               {Math.round(zoom * 100)}%
             </span>
             <button
               onClick={() => setZoom(Math.min(8, zoom + 0.5))}
-              className="p-1.5 text-zinc-400 hover:text-white rounded hover:bg-zinc-700 transition"
+              className={`p-1.5 rounded transition cursor-pointer ${
+                isDark ? 'text-zinc-400 hover:text-white hover:bg-zinc-700' : 'text-zinc-600 hover:text-zinc-900 hover:bg-zinc-100'
+              }`}
               title="Aumentar Zoom"
             >
               <ZoomIn className="w-3.5 h-3.5" />
             </button>
             <button
               onClick={handleResetZoom}
-              className="p-1.5 text-zinc-400 hover:text-cyan-400 rounded hover:bg-zinc-700 transition ml-0.5"
+              className={`p-1.5 rounded transition ml-0.5 cursor-pointer ${
+                isDark ? 'text-zinc-400 hover:text-cyan-400 hover:bg-zinc-700' : 'text-zinc-600 hover:text-cyan-700 hover:bg-zinc-100'
+              }`}
               title="Ajustar 100% (Reset)"
             >
               <RotateCcw className="w-3 h-3" />
@@ -160,10 +187,14 @@ export const ComparisonViewer: React.FC<ComparisonViewerProps> = ({
               <button
                 key={z}
                 onClick={() => { setZoom(z); setPan({ x: 0, y: 0 }); }}
-                className={`px-2 py-1 rounded text-[11px] font-mono transition ${
+                className={`px-2 py-1 rounded text-[11px] font-mono transition cursor-pointer ${
                   zoom === z
-                    ? 'bg-cyan-500/20 text-cyan-400 font-bold border border-cyan-500/40'
-                    : 'text-zinc-400 hover:text-zinc-200 bg-zinc-800/40'
+                    ? isDark
+                      ? 'bg-cyan-500/20 text-cyan-400 font-bold border border-cyan-500/40'
+                      : 'bg-cyan-50 text-cyan-700 font-bold border border-cyan-300'
+                    : isDark 
+                      ? 'text-zinc-400 hover:text-zinc-200 bg-zinc-800/40' 
+                      : 'text-zinc-600 hover:text-zinc-900 bg-white border border-zinc-200'
                 }`}
               >
                 {z * 100}%
@@ -172,13 +203,15 @@ export const ComparisonViewer: React.FC<ComparisonViewerProps> = ({
           </div>
 
           {/* Comparison Mode (Split vs Side-by-side) */}
-          <div className="flex items-center bg-zinc-800/80 rounded-lg p-0.5 border border-zinc-700/60">
+          <div className={`flex items-center rounded-lg p-0.5 border ${
+            isDark ? 'bg-zinc-800/80 border-zinc-700/60' : 'bg-white border-zinc-200 shadow-sm'
+          }`}>
             <button
               onClick={() => setViewMode('split')}
-              className={`p-1.5 rounded transition ${
+              className={`p-1.5 rounded transition cursor-pointer ${
                 viewMode === 'split'
-                  ? 'bg-zinc-700 text-cyan-400'
-                  : 'text-zinc-400 hover:text-white'
+                  ? isDark ? 'bg-zinc-700 text-cyan-400' : 'bg-zinc-100 text-cyan-700 font-bold'
+                  : isDark ? 'text-zinc-400 hover:text-white' : 'text-zinc-500 hover:text-zinc-900'
               }`}
               title="Comparação Deslizante (Split Slider)"
             >
@@ -186,10 +219,10 @@ export const ComparisonViewer: React.FC<ComparisonViewerProps> = ({
             </button>
             <button
               onClick={() => setViewMode('side-by-side')}
-              className={`p-1.5 rounded transition ${
+              className={`p-1.5 rounded transition cursor-pointer ${
                 viewMode === 'side-by-side'
-                  ? 'bg-zinc-700 text-cyan-400'
-                  : 'text-zinc-400 hover:text-white'
+                  ? isDark ? 'bg-zinc-700 text-cyan-400' : 'bg-zinc-100 text-cyan-700 font-bold'
+                  : isDark ? 'text-zinc-400 hover:text-white' : 'text-zinc-500 hover:text-zinc-900'
               }`}
               title="Lado a Lado (Side by Side)"
             >
@@ -198,11 +231,15 @@ export const ComparisonViewer: React.FC<ComparisonViewerProps> = ({
           </div>
 
           {/* Background Toggle */}
-          <div className="flex items-center bg-zinc-800/80 rounded-lg p-0.5 border border-zinc-700/60">
+          <div className={`flex items-center rounded-lg p-0.5 border ${
+            isDark ? 'bg-zinc-800/80 border-zinc-700/60' : 'bg-white border-zinc-200 shadow-sm'
+          }`}>
             <button
               onClick={() => setBgStyle('dark')}
-              className={`w-5 h-5 rounded text-[9px] font-bold transition flex items-center justify-center ${
-                bgStyle === 'dark' ? 'bg-zinc-700 text-white border border-zinc-500' : 'text-zinc-500'
+              className={`w-5 h-5 rounded text-[9px] font-bold transition flex items-center justify-center cursor-pointer ${
+                bgStyle === 'dark' 
+                  ? 'bg-zinc-700 text-white border border-zinc-500' 
+                  : isDark ? 'text-zinc-500' : 'text-zinc-400 hover:text-zinc-800'
               }`}
               title="Fundo Preto Estúdio"
             >
@@ -210,8 +247,10 @@ export const ComparisonViewer: React.FC<ComparisonViewerProps> = ({
             </button>
             <button
               onClick={() => setBgStyle('white')}
-              className={`w-5 h-5 rounded text-[9px] font-bold transition flex items-center justify-center ${
-                bgStyle === 'white' ? 'bg-white text-zinc-950 font-extrabold border border-zinc-400' : 'text-zinc-500'
+              className={`w-5 h-5 rounded text-[9px] font-bold transition flex items-center justify-center cursor-pointer ${
+                bgStyle === 'white' 
+                  ? 'bg-white text-zinc-950 font-extrabold border border-zinc-400 shadow-sm' 
+                  : isDark ? 'text-zinc-500' : 'text-zinc-400 hover:text-zinc-800'
               }`}
               title="Fundo Papel Branco (Impressão)"
             >
@@ -219,8 +258,10 @@ export const ComparisonViewer: React.FC<ComparisonViewerProps> = ({
             </button>
             <button
               onClick={() => setBgStyle('checker')}
-              className={`w-5 h-5 rounded text-[9px] font-bold transition flex items-center justify-center ${
-                bgStyle === 'checker' ? 'bg-zinc-700 text-cyan-400 border border-zinc-500' : 'text-zinc-500'
+              className={`w-5 h-5 rounded text-[9px] font-bold transition flex items-center justify-center cursor-pointer ${
+                bgStyle === 'checker' 
+                  ? isDark ? 'bg-zinc-700 text-cyan-400 border border-zinc-500' : 'bg-zinc-100 text-cyan-700 border border-zinc-300'
+                  : isDark ? 'text-zinc-500' : 'text-zinc-400 hover:text-zinc-800'
               }`}
               title="Fundo Transparente / Xadrez"
             >
@@ -234,26 +275,34 @@ export const ComparisonViewer: React.FC<ComparisonViewerProps> = ({
       <div
         ref={containerRef}
         onMouseDown={handleMouseDownPan}
-        className={`relative flex-1 min-h-[420px] max-h-[720px] overflow-hidden select-none cursor-grab active:cursor-grabbing ${bgClasses[bgStyle]}`}
+        className={`relative flex-1 min-h-[420px] max-h-[720px] overflow-hidden select-none cursor-grab active:cursor-grabbing transition-colors ${bgClasses[bgStyle]}`}
       >
         {/* Processing Progress Overlay */}
         {isProcessing && (
-          <div className="absolute inset-0 z-30 bg-zinc-950/80 backdrop-blur-sm flex flex-col items-center justify-center gap-4 p-6">
-            <div className="w-16 h-16 rounded-2xl bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center text-cyan-400 animate-spin">
+          <div className={`absolute inset-0 z-30 backdrop-blur-sm flex flex-col items-center justify-center gap-4 p-6 ${
+            isDark ? 'bg-zinc-950/80' : 'bg-white/80'
+          }`}>
+            <div className={`w-16 h-16 rounded-2xl flex items-center justify-center animate-spin border ${
+              isDark ? 'bg-cyan-500/10 border-cyan-500/30 text-cyan-400' : 'bg-cyan-50 border-cyan-200 text-cyan-600'
+            }`}>
               <Sparkles className="w-8 h-8" />
             </div>
             <div className="w-full max-w-md space-y-2 text-center">
-              <div className="flex items-center justify-between text-xs font-mono text-zinc-300">
+              <div className={`flex items-center justify-between text-xs font-mono ${
+                isDark ? 'text-zinc-300' : 'text-zinc-700 font-semibold'
+              }`}>
                 <span>{progressStatus}</span>
-                <span className="font-bold text-cyan-400">{progressPercent}%</span>
+                <span className={`font-bold ${isDark ? 'text-cyan-400' : 'text-cyan-700'}`}>{progressPercent}%</span>
               </div>
-              <div className="w-full h-2 bg-zinc-800 rounded-full overflow-hidden border border-zinc-700">
+              <div className={`w-full h-2 rounded-full overflow-hidden border ${
+                isDark ? 'bg-zinc-800 border-zinc-700' : 'bg-zinc-200 border-zinc-300'
+              }`}>
                 <div
                   className="h-full bg-gradient-to-r from-cyan-500 to-blue-600 transition-all duration-300"
                   style={{ width: `${progressPercent}%` }}
                 />
               </div>
-              <p className="text-[11px] text-zinc-500">
+              <p className={`text-[11px] ${isDark ? 'text-zinc-500' : 'text-zinc-500'}`}>
                 Processando linhas de nanquim, filtrando serrilhado e gerando matriz 300 DPI...
               </p>
             </div>
@@ -302,7 +351,9 @@ export const ComparisonViewer: React.FC<ComparisonViewerProps> = ({
                 <div className="w-0.5 h-full bg-cyan-400 shadow-[0_0_10px_rgba(6,182,212,0.8)]" />
 
                 {/* Central circular handle badge */}
-                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-zinc-950 border-2 border-cyan-400 shadow-xl flex items-center justify-center text-cyan-400 text-xs font-bold transition group-hover:scale-110">
+                <div className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-8 h-8 rounded-full border-2 shadow-xl flex items-center justify-center text-xs font-bold transition group-hover:scale-110 ${
+                  isDark ? 'bg-zinc-950 border-cyan-400 text-cyan-400' : 'bg-white border-cyan-500 text-cyan-600 shadow-md'
+                }`}>
                   <SplitSquareVertical className="w-4 h-4" />
                 </div>
               </div>
@@ -313,7 +364,9 @@ export const ComparisonViewer: React.FC<ComparisonViewerProps> = ({
         {/* View Mode: SIDE BY SIDE */}
         {viewMode === 'side-by-side' && (
           <div
-            className="absolute inset-0 grid grid-cols-2 divide-x divide-zinc-800"
+            className={`absolute inset-0 grid grid-cols-2 divide-x ${
+              isDark ? 'divide-zinc-800' : 'divide-zinc-200'
+            }`}
             style={{
               transform: `translate(${pan.x}px, ${pan.y}px) scale(${zoom})`,
               transformOrigin: 'center center',
@@ -321,7 +374,9 @@ export const ComparisonViewer: React.FC<ComparisonViewerProps> = ({
           >
             {/* Left: Original */}
             <div className="relative flex items-center justify-center p-4">
-              <span className="absolute top-3 left-3 z-10 px-2 py-0.5 rounded text-[10px] font-bold uppercase bg-zinc-900/90 text-zinc-400 border border-zinc-800">
+              <span className={`absolute top-3 left-3 z-10 px-2 py-0.5 rounded text-[10px] font-bold uppercase border backdrop-blur ${
+                isDark ? 'bg-zinc-900/90 text-zinc-400 border-zinc-800' : 'bg-white/90 text-zinc-700 border-zinc-300 shadow-sm'
+              }`}>
                 Original ({originalWidth}×{originalHeight} px)
               </span>
               <img
@@ -334,7 +389,11 @@ export const ComparisonViewer: React.FC<ComparisonViewerProps> = ({
 
             {/* Right: Result */}
             <div className="relative flex items-center justify-center p-4">
-              <span className="absolute top-3 left-3 z-10 px-2 py-0.5 rounded text-[10px] font-bold uppercase bg-cyan-950/90 text-cyan-400 border border-cyan-800/80">
+              <span className={`absolute top-3 left-3 z-10 px-2 py-0.5 rounded text-[10px] font-bold uppercase border backdrop-blur ${
+                isDark 
+                  ? 'bg-cyan-950/90 text-cyan-400 border-cyan-800/80' 
+                  : 'bg-cyan-50/90 text-cyan-700 border-cyan-300 shadow-sm'
+              }`}>
                 Resultado ({resultWidth || originalWidth * 2}×{resultHeight || originalHeight * 2} px)
               </span>
               <img
@@ -350,13 +409,19 @@ export const ComparisonViewer: React.FC<ComparisonViewerProps> = ({
         {/* Float Labels for Split Mode */}
         {viewMode === 'split' && (
           <>
-            <div className="absolute top-3 left-3 z-20 pointer-events-none px-2.5 py-1 rounded-md bg-zinc-900/90 backdrop-blur border border-zinc-800 text-[11px] font-semibold text-zinc-300">
+            <div className={`absolute top-3 left-3 z-20 pointer-events-none px-2.5 py-1 rounded-md backdrop-blur border text-[11px] font-semibold ${
+              isDark ? 'bg-zinc-900/90 border-zinc-800 text-zinc-300' : 'bg-white/90 border-zinc-300 text-zinc-800 shadow-sm'
+            }`}>
               ORIGINAL (Antes)
             </div>
-            <div className="absolute top-3 right-3 z-20 pointer-events-none px-2.5 py-1 rounded-md bg-cyan-950/90 backdrop-blur border border-cyan-800 text-[11px] font-semibold text-cyan-300 flex items-center gap-1.5">
+            <div className={`absolute top-3 right-3 z-20 pointer-events-none px-2.5 py-1 rounded-md backdrop-blur border text-[11px] font-semibold flex items-center gap-1.5 ${
+              isDark 
+                ? 'bg-cyan-950/90 border-cyan-800 text-cyan-300' 
+                : 'bg-cyan-50/90 border-cyan-300 text-cyan-700 shadow-sm'
+            }`}>
               <span>RESULTADO (Depois)</span>
               {resultUrl && (
-                <Check className="w-3.5 h-3.5 text-cyan-400" />
+                <Check className={`w-3.5 h-3.5 ${isDark ? 'text-cyan-400' : 'text-cyan-600'}`} />
               )}
             </div>
           </>
@@ -364,8 +429,10 @@ export const ComparisonViewer: React.FC<ComparisonViewerProps> = ({
 
         {/* Pan hint when zoomed */}
         {zoom > 1 && (
-          <div className="absolute bottom-3 left-3 z-20 px-2.5 py-1 rounded bg-zinc-900/90 border border-zinc-800 text-[11px] text-zinc-400 flex items-center gap-1.5">
-            <Move className="w-3.5 h-3.5 text-cyan-400" />
+          <div className={`absolute bottom-3 left-3 z-20 px-2.5 py-1 rounded border text-[11px] flex items-center gap-1.5 ${
+            isDark ? 'bg-zinc-900/90 border-zinc-800 text-zinc-400' : 'bg-white/90 border-zinc-300 text-zinc-600 shadow-sm'
+          }`}>
+            <Move className="w-3.5 h-3.5 text-cyan-500" />
             <span>Arraste para mover (Pan) • Zoom: {Math.round(zoom * 100)}%</span>
           </div>
         )}

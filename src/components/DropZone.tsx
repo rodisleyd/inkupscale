@@ -1,6 +1,7 @@
 import React, { useRef, useState } from 'react';
 import { Upload, Image as ImageIcon, Sparkles, CheckCircle2, ArrowRight, Link2, Globe, AlertCircle } from 'lucide-react';
 import { ArtworkSample, getArtworkSamples } from '../utils/samples';
+import { useTheme } from '../context/ThemeContext';
 
 interface DropZoneProps {
   onFileSelect: (file: File) => void;
@@ -9,6 +10,8 @@ interface DropZoneProps {
 }
 
 export const DropZone: React.FC<DropZoneProps> = ({ onFileSelect, onSampleSelect, onUrlSelect }) => {
+  const { theme } = useTheme();
+  const isDark = theme === 'dark';
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [isDragging, setIsDragging] = useState(false);
   const [samples] = useState<ArtworkSample[]>(() => getArtworkSamples());
@@ -137,14 +140,18 @@ export const DropZone: React.FC<DropZoneProps> = ({ onFileSelect, onSampleSelect
     <div className="w-full max-w-5xl mx-auto py-8 px-4 flex flex-col gap-8">
       {/* Hero Explanatory Banner */}
       <div className="text-center space-y-3 max-w-3xl mx-auto">
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-950/60 border border-cyan-800/50 text-cyan-400 text-xs font-semibold">
+        <div className={`inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold border ${
+          isDark 
+            ? 'bg-cyan-950/60 border-cyan-800/50 text-cyan-400' 
+            : 'bg-cyan-50 border-cyan-200 text-cyan-700 shadow-sm'
+        }`}>
           <Sparkles className="w-3.5 h-3.5" />
           Para Ilustradores, Quadrinistas &amp; Designers Gráficos
         </div>
-        <h2 className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight">
-          Transforme traço raster em <span className="bg-gradient-to-r from-cyan-400 via-blue-500 to-indigo-400 bg-clip-text text-transparent">qualidade de impressão 300 DPI</span>
+        <h2 className={`text-3xl sm:text-4xl font-extrabold tracking-tight ${isDark ? 'text-white' : 'text-zinc-900'}`}>
+          Transforme traço raster em <span className="bg-gradient-to-r from-cyan-500 via-blue-600 to-indigo-600 bg-clip-text text-transparent">qualidade de impressão 300 DPI</span>
         </h2>
-        <p className="text-zinc-400 text-sm sm:text-base leading-relaxed">
+        <p className={`text-sm sm:text-base leading-relaxed ${isDark ? 'text-zinc-400' : 'text-zinc-600'}`}>
           Reconstrução inteligente de arte final em preto e branco (nanquim), remoção de serrilhados, preservação de hachuras finas e upscaling 2× a 8× sem aspecto borrado.
         </p>
       </div>
@@ -159,8 +166,12 @@ export const DropZone: React.FC<DropZoneProps> = ({ onFileSelect, onSampleSelect
           onClick={() => fileInputRef.current?.click()}
           className={`relative group border-2 border-dashed rounded-2xl p-8 sm:p-10 text-center cursor-pointer transition-all duration-200 ${
             isDragging
-              ? 'border-cyan-500 bg-cyan-950/20 scale-[1.01]'
-              : 'border-zinc-800 bg-zinc-900/40 hover:border-zinc-700 hover:bg-zinc-900/70'
+              ? isDark 
+                ? 'border-cyan-500 bg-cyan-950/20 scale-[1.01]' 
+                : 'border-cyan-500 bg-cyan-50/70 scale-[1.01]'
+              : isDark
+                ? 'border-zinc-800 bg-zinc-900/40 hover:border-zinc-700 hover:bg-zinc-900/70'
+                : 'border-zinc-300 bg-white hover:border-zinc-400 hover:bg-zinc-50/80 shadow-sm'
           }`}
         >
           <input
@@ -172,30 +183,50 @@ export const DropZone: React.FC<DropZoneProps> = ({ onFileSelect, onSampleSelect
           />
 
           <div className="flex flex-col items-center gap-3">
-            <div className="w-14 h-14 rounded-2xl bg-zinc-800/80 border border-zinc-700 flex items-center justify-center text-cyan-400 group-hover:scale-110 group-hover:border-cyan-500/50 transition-all duration-300 shadow-xl">
+            <div className={`w-14 h-14 rounded-2xl border flex items-center justify-center group-hover:scale-110 transition-all duration-300 shadow-xl ${
+              isDark 
+                ? 'bg-zinc-800/80 border-zinc-700 text-cyan-400 group-hover:border-cyan-500/50' 
+                : 'bg-zinc-100 border-zinc-200 text-cyan-600 group-hover:border-cyan-400'
+            }`}>
               <Upload className="w-7 h-7" />
             </div>
 
             <div className="space-y-1">
-              <p className="text-base font-semibold text-zinc-200">
+              <p className={`text-base font-semibold ${isDark ? 'text-zinc-200' : 'text-zinc-800'}`}>
                 Arraste sua arte aqui ou clique para selecionar do computador
               </p>
-              <p className="text-xs text-zinc-500 font-mono">
+              <p className={`text-xs font-mono ${isDark ? 'text-zinc-500' : 'text-zinc-500'}`}>
                 Suporta PNG, JPG, WEBP e TIFF • Resolução recomendada: 512px a 4096px
               </p>
             </div>
 
             <div className="flex flex-wrap items-center justify-center gap-2 pt-1">
-              <span className="text-[11px] font-medium px-2.5 py-1 rounded-md bg-zinc-800 text-zinc-300 border border-zinc-700/60">
+              <span className={`text-[11px] font-medium px-2.5 py-1 rounded-md border ${
+                isDark 
+                  ? 'bg-zinc-800 text-zinc-300 border-zinc-700/60' 
+                  : 'bg-zinc-100 text-zinc-700 border-zinc-200'
+              }`}>
                 ✒️ Nanquim &amp; Hachuras
               </span>
-              <span className="text-[11px] font-medium px-2.5 py-1 rounded-md bg-zinc-800 text-zinc-300 border border-zinc-700/60">
+              <span className={`text-[11px] font-medium px-2.5 py-1 rounded-md border ${
+                isDark 
+                  ? 'bg-zinc-800 text-zinc-300 border-zinc-700/60' 
+                  : 'bg-zinc-100 text-zinc-700 border-zinc-200'
+              }`}>
                 ⚡ Print Master 300 DPI
               </span>
-              <span className="text-[11px] font-medium px-2.5 py-1 rounded-md bg-zinc-800 text-zinc-300 border border-zinc-700/60">
+              <span className={`text-[11px] font-medium px-2.5 py-1 rounded-md border ${
+                isDark 
+                  ? 'bg-zinc-800 text-zinc-300 border-zinc-700/60' 
+                  : 'bg-zinc-100 text-zinc-700 border-zinc-200'
+              }`}>
                 ✨ Detecção Automática
               </span>
-              <span className="text-[11px] font-medium px-2.5 py-1 rounded-md bg-zinc-800 text-zinc-300 border border-zinc-700/60">
+              <span className={`text-[11px] font-medium px-2.5 py-1 rounded-md border ${
+                isDark 
+                  ? 'bg-zinc-800 text-zinc-300 border-zinc-700/60' 
+                  : 'bg-zinc-100 text-zinc-700 border-zinc-200'
+              }`}>
                 📐 Exportação SVG + PNG
               </span>
             </div>
@@ -203,11 +234,15 @@ export const DropZone: React.FC<DropZoneProps> = ({ onFileSelect, onSampleSelect
         </div>
 
         {/* URL Input Bar */}
-        <div className="p-4 rounded-2xl bg-zinc-900/60 border border-zinc-800/90 shadow-xl backdrop-blur">
+        <div className={`p-4 rounded-2xl border shadow-xl backdrop-blur transition-colors ${
+          isDark 
+            ? 'bg-zinc-900/60 border-zinc-800/90' 
+            : 'bg-white border-zinc-200 shadow-zinc-200/50'
+        }`}>
           <form onSubmit={handleUrlSubmit} className="flex flex-col sm:flex-row items-center gap-2.5">
             <div className="relative flex-1 w-full">
               <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-zinc-500">
-                <Link2 className="w-4 h-4 text-cyan-400" />
+                <Link2 className="w-4 h-4 text-cyan-500" />
               </div>
               <input
                 type="url"
@@ -217,7 +252,11 @@ export const DropZone: React.FC<DropZoneProps> = ({ onFileSelect, onSampleSelect
                   if (urlError) setUrlError(null);
                 }}
                 placeholder="Ou cole o link direto de uma imagem (ex: https://exemplo.com/desenho.png)"
-                className="w-full pl-10 pr-4 py-2.5 bg-zinc-950 border border-zinc-800 rounded-xl text-xs text-zinc-200 placeholder:text-zinc-500 focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 transition-all font-mono"
+                className={`w-full pl-10 pr-4 py-2.5 border rounded-xl text-xs focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 transition-all font-mono ${
+                  isDark 
+                    ? 'bg-zinc-950 border-zinc-800 text-zinc-200 placeholder:text-zinc-500' 
+                    : 'bg-zinc-50 border-zinc-200 text-zinc-800 placeholder:text-zinc-400'
+                }`}
               />
             </div>
             <button
@@ -231,8 +270,12 @@ export const DropZone: React.FC<DropZoneProps> = ({ onFileSelect, onSampleSelect
           </form>
 
           {urlError && (
-            <div className="mt-2.5 flex items-center gap-2 text-xs text-red-400 bg-red-950/40 border border-red-800/50 px-3 py-2 rounded-xl">
-              <AlertCircle className="w-4 h-4 flex-shrink-0" />
+            <div className={`mt-2.5 flex items-center gap-2 text-xs px-3 py-2 rounded-xl border ${
+              isDark 
+                ? 'text-red-400 bg-red-950/40 border-red-800/50' 
+                : 'text-red-700 bg-red-50 border-red-200'
+            }`}>
+              <AlertCircle className="w-4 h-4 flex-shrink-0 text-red-500" />
               <span>{urlError}</span>
             </div>
           )}
@@ -240,11 +283,11 @@ export const DropZone: React.FC<DropZoneProps> = ({ onFileSelect, onSampleSelect
       </div>
 
       {/* Curated Sample Gallery from the PDF */}
-      <div className="space-y-4 pt-4 border-t border-zinc-900">
+      <div className={`space-y-4 pt-4 border-t ${isDark ? 'border-zinc-900' : 'border-zinc-200'}`}>
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <ImageIcon className="w-4 h-4 text-cyan-400" />
-            <h3 className="text-sm font-semibold text-zinc-300">
+            <ImageIcon className="w-4 h-4 text-cyan-500" />
+            <h3 className={`text-sm font-semibold ${isDark ? 'text-zinc-300' : 'text-zinc-800'}`}>
               Ou teste instantaneamente com as artes de referência do documento:
             </h3>
           </div>
@@ -256,27 +299,43 @@ export const DropZone: React.FC<DropZoneProps> = ({ onFileSelect, onSampleSelect
             <button
               key={sample.id}
               onClick={() => onSampleSelect(sample)}
-              className="group text-left p-3 rounded-xl bg-zinc-900/60 hover:bg-zinc-800/80 border border-zinc-800/80 hover:border-cyan-500/50 transition-all flex flex-col gap-2.5 cursor-pointer"
+              className={`group text-left p-3 rounded-xl border transition-all flex flex-col gap-2.5 cursor-pointer ${
+                isDark 
+                  ? 'bg-zinc-900/60 hover:bg-zinc-800/80 border-zinc-800/80 hover:border-cyan-500/50 shadow-sm' 
+                  : 'bg-white hover:bg-zinc-50/80 border-zinc-200 hover:border-cyan-500/60 shadow-sm hover:shadow-md'
+              }`}
             >
-              <div className="relative aspect-square w-full rounded-lg overflow-hidden bg-white/5 border border-zinc-800">
+              <div className={`relative aspect-square w-full rounded-lg overflow-hidden border ${
+                isDark ? 'bg-white/5 border-zinc-800' : 'bg-zinc-100 border-zinc-200'
+              }`}>
                 <img
                   src={sample.dataUrl}
                   alt={sample.title}
                   className="w-full h-full object-contain filter group-hover:contrast-125 transition-all"
                 />
-                <span className="absolute top-1.5 left-1.5 text-[9px] font-bold px-1.5 py-0.5 rounded bg-zinc-950/80 text-zinc-300 backdrop-blur border border-zinc-800">
+                <span className={`absolute top-1.5 left-1.5 text-[9px] font-bold px-1.5 py-0.5 rounded backdrop-blur border ${
+                  isDark 
+                    ? 'bg-zinc-950/80 text-zinc-300 border-zinc-800' 
+                    : 'bg-white/90 text-zinc-700 border-zinc-300 shadow-sm'
+                }`}>
                   {sample.category}
                 </span>
               </div>
               <div>
-                <p className="text-xs font-semibold text-zinc-200 group-hover:text-cyan-300 line-clamp-1">
+                <p className={`text-xs font-semibold line-clamp-1 ${
+                  isDark ? 'text-zinc-200 group-hover:text-cyan-300' : 'text-zinc-900 group-hover:text-cyan-700'
+                }`}>
                   {sample.title}
                 </p>
-                <p className="text-[11px] text-zinc-400 line-clamp-2 leading-tight mt-0.5">
+                <p className={`text-[11px] line-clamp-2 leading-tight mt-0.5 ${
+                  isDark ? 'text-zinc-400' : 'text-zinc-500'
+                }`}>
                   {sample.description}
                 </p>
               </div>
-              <div className="mt-auto pt-2 flex items-center justify-between text-[10px] text-cyan-400/90 font-medium">
+              <div className={`mt-auto pt-2 flex items-center justify-between text-[10px] font-medium ${
+                isDark ? 'text-cyan-400/90' : 'text-cyan-700'
+              }`}>
                 <span>Testar agora</span>
                 <ArrowRight className="w-3 h-3 group-hover:translate-x-1 transition-transform" />
               </div>
